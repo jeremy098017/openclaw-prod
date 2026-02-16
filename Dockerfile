@@ -29,4 +29,5 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # 4. 指定 Token 為 pmad1Wurp
 # ================================
 CMD sh -c "echo '{\"gateway\":{\"port\":8080,\"mode\":\"local\",\"bind\":\"lan\",\"controlUi\":{\"dangerouslyDisableDeviceAuth\":true,\"allowInsecureAuth\":true},\"auth\":{\"mode\":\"token\",\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json && \
+           openclaw config set agent.model google/gemini-2.5-flash && \
            unset PORT && exec openclaw gateway run"
