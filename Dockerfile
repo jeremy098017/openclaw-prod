@@ -50,6 +50,7 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # 2. 啟動隱形斗篷 (node proxy.js)
 # 3. 啟動龍蝦
 # ================================
-CMD sh -c "echo '{\"gateway\":{\"mode\":\"local\",\"auth\":{\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json && \
+CMD sh -c "openclaw config set gateway.mode local && \
+           openclaw config set gateway.auth.token pmad1Wurp && \
            node proxy.js & \
-           openclaw gateway run"
+           env PORT= exec openclaw gateway run"
