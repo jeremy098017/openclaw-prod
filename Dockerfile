@@ -55,10 +55,11 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
 # 啟動指令：
-# 1. 刪除舊的設定檔 (清除之前的密碼記憶)
-# 2. 重新設定為 local 模式 (不再設定 token)
+# 1. 刪除舊設定檔，避免被之前的亂碼干擾
+# 2. 強制寫入我們專屬的 pmad1Wurp 密碼
 # ================================
 CMD sh -c "rm -f /root/.openclaw/openclaw.json && \
            openclaw config set gateway.mode local && \
+           openclaw config set gateway.auth.token pmad1Wurp && \
            node proxy.js & \
            unset PORT && exec openclaw gateway run"
