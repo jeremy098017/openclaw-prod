@@ -23,16 +23,16 @@ RUN npm install -g openclaw
 RUN useradd -m -u 10001 openclaw
 
 # ================================
-# 關鍵步驟：直接在鏡像內建立預設設定檔
+# 關鍵修正：使用 printf 確保 TOML 格式正確換行
 # ================================
 RUN mkdir -p /home/openclaw/.openclaw && \
-    echo '[gateway]\nmode = "local"\nport = 18789' > /home/openclaw/.openclaw/config.toml && \
+    printf "[gateway]\nmode = \"local\"\nport = 18789\n" > /home/openclaw/.openclaw/config.toml && \
     chown -R openclaw:openclaw /home/openclaw /app
 
 # 切換使用者
 USER openclaw
 
-# 複製其餘檔案 (如果你有 config.toml 會覆蓋掉上面的預設值)
+# 複製其餘檔案
 COPY --chown=openclaw:openclaw . .
 
 # 健康檢查
@@ -43,5 +43,5 @@ EXPOSE 18789
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-# 啟動指令
-CMD ["openclaw", "gateway", "run"]
+# 啟動指令：直接加上參數強制過關
+CMD ["openclaw", "gateway", "run", "--gateway.mode=local", "--allow-unconfigured"]
