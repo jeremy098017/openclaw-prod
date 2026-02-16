@@ -5,8 +5,7 @@ FROM mcr.microsoft.com/playwright:v1.50.0-noble
 
 ENV NODE_ENV=production
 ENV TZ=Asia/Taipei
-# 關鍵：強制指定 OpenClaw 讀取 /app/config.toml
-ENV OPENCLAW_CONFIG=/app/config.toml
+ENV OPENCLAW_LOG_LEVEL=info
 
 WORKDIR /app
 
@@ -18,7 +17,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN npm install -g openclaw
 RUN useradd -m -u 10001 openclaw
 
-# 把你剛建好的 config.toml 跟其他檔案一起複製進去
+# 預先建好資料夾並給予權限
+RUN mkdir -p /home/openclaw/.openclaw && chown -R openclaw:openclaw /home/openclaw /app
+
 COPY --chown=openclaw:openclaw . .
 
 USER openclaw
@@ -29,5 +30,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 EXPOSE 18789
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-# 最單純的啟動指令
-CMD ["openclaw", "gateway", "run"]
+# ================================
+# 終極絕殺：用 OpenClaw 內建指令寫入設定，接著馬上啟動！
+# ================================
+CMD sh -c "openclaw config set gateway.mode local && exec openclaw gateway run"
