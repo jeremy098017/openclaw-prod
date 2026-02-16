@@ -9,7 +9,7 @@ ENV TZ=Asia/Taipei
 
 WORKDIR /app
 
-# 安裝必要工具：tini (守護行程)、curl (測試用)、socat (轉接 Port 救星)
+# 安裝必要工具：tini、curl、socat
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tini \
     curl \
@@ -19,20 +19,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 全域安裝 OpenClaw
 RUN npm install -g openclaw
 
-# 確保設定檔要存放的目錄存在 (使用 root 權限避免權限阻擋)
+# 確保設定檔要存放的目錄存在
 RUN mkdir -p /root/.openclaw
 
-# 暴露 Zeabur 預設對外溝通的 8080 Port
+# 暴露 8080 Port 給 Zeabur
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 終極啟動指令 (三合一)：
-# 1. 寫入 JSON 設定：強制切換為 public 模式 (免除 Pairing) 並綁定密碼
-# 2. 啟動 socat：把 Zeabur 敲門的 8080 流量，無縫轉接給龍蝦的 18789 (解決 502 錯誤)
-# 3. 啟動 OpenClaw 網關
+# 最終啟動指令：
+# 1. 寫入 JSON：mode 設回 local，並加入 trustedProxies 陣列來破解配對要求
+# 2. 啟動 socat 轉接 8080 -> 18789
+# 3. 啟動龍蝦
 # ================================
-CMD sh -c "echo '{\"gateway\":{\"mode\":\"public\",\"auth\":{\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json && \
+CMD sh -c "echo '{\"gateway\":{\"mode\":\"local\",\"auth\":{\"token\":\"pmad1Wurp\"},\"trustedProxies\":[\"0.0.0.0/0\"]}}' > /root/.openclaw/openclaw.json && \
            socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 & \
-           openclaw gateway run"
+           exec openclaw gateway run"
