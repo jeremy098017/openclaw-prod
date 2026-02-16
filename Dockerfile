@@ -33,8 +33,7 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # 1. 移除會導致報錯的 trustedProxies (避免 Config validation failed)
 # 2. 確保 socat 在背景穩定執行
 # ================================
-CMD sh -c "openclaw config set gateway.mode local && \
-           openclaw config set gateway.auth.token pmad1Wurp && \
-           openclaw config set gateway.trustedProxies '[\"0.0.0.0/0\"]' && \
-           (socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 &) && \
-           openclaw gateway run"
+CMD sh -c "mkdir -p /root/.openclaw && \
+    printf '{\"gateway\":{\"mode\":\"local\",\"auth\":{\"token\":\"pmad1Wurp\"},\"trustedProxies\":[\"0.0.0.0/0\"]}}' > /root/.openclaw/openclaw.json && \
+    (socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 &) && \
+    exec openclaw gateway run"
