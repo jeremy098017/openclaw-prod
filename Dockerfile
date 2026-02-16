@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN npm install -g openclaw
 RUN useradd -m -u 10001 openclaw
 
-# 確保權限
+# 確保權限與資料夾存在
 RUN mkdir -p /home/openclaw/.openclaw && chown -R openclaw:openclaw /home/openclaw /app
 COPY --chown=openclaw:openclaw . .
 
@@ -29,12 +29,11 @@ EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 終極修正：
-# 1. 移除 HEALTHCHECK 指令（避免 Zeabur 誤判導致重啟）
-# 2. 先設定 Config，再啟動轉接與龍蝦
+# 最終修正：
+# 1. 移除會導致報錯的 trustedProxies (避免 Config validation failed)
+# 2. 確保 socat 在背景穩定執行
 # ================================
 CMD sh -c "openclaw config set gateway.mode local && \
            openclaw config set gateway.auth.token pmad1Wurp && \
-           openclaw config set gateway.trustedProxies true && \
-           socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 & \
-           exec openclaw gateway run"
+           (socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 &) && \
+           openclaw gateway run"
