@@ -25,26 +25,19 @@ proxy.on('error', (err) => console.error('Proxy error:', err.message));
 
 // 終極偽裝函數
 const cleanHeaders = (req) => {
-  // 1. 拔掉所有外網 IP 標籤
   delete req.headers['x-forwarded-for'];
   delete req.headers['x-forwarded-proto'];
   delete req.headers['x-forwarded-host'];
   delete req.headers['x-real-ip'];
-  
-  // 2. 把名牌 (Host) 換成內網地址
   req.headers['host'] = '127.0.0.1:18789';
-  
-  // 3. 【本次新增】把出發地 (Origin) 也換成內網地址！
   req.headers['origin'] = 'http://127.0.0.1:18789';
 };
 
-// 處理一般網頁載入
 const server = http.createServer((req, res) => {
   cleanHeaders(req);
   proxy.web(req, res);
 });
 
-// 處理即時連線 (WebSocket)
 server.on('upgrade', (req, socket, head) => {
   cleanHeaders(req);
   proxy.ws(req, socket, head);
@@ -61,9 +54,11 @@ EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 啟動指令
+# 啟動指令：
+# 1. 刪除舊的設定檔 (清除之前的密碼記憶)
+# 2. 重新設定為 local 模式 (不再設定 token)
 # ================================
-CMD sh -c "openclaw config set gateway.mode local && \
-           openclaw config set gateway.auth.token pmad1Wurp && \
+CMD sh -c "rm -f /root/.openclaw/openclaw.json && \
+           openclaw config set gateway.mode local && \
            node proxy.js & \
            unset PORT && exec openclaw gateway run"
