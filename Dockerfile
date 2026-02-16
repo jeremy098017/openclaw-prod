@@ -8,7 +8,6 @@ ENV TZ=Asia/Taipei
 
 WORKDIR /app
 
-# 安裝守護行程與網路測試工具 (不需要隱形斗篷和 socat 了！)
 RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm -rf /var/lib/apt/lists/*
 
 # 全域安裝 OpenClaw
@@ -22,11 +21,7 @@ EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 終極啟動指令：
-# 1. 直接把 8080 Port 寫給龍蝦
-# 2. 開放區域網路 (lan) 連線
-# 3. 關閉煩人的 Device Auth (設備綁定)
-# 4. 指定 Token 為 pmad1Wurp
+# 終極啟動指令 (還原至最穩定狀態)
 # ================================
-CMD sh -c "echo '{\"gateway\":{\"port\":8080,\"mode\":\"local\",\"bind\":\"lan\",\"controlUi\":{\"dangerouslyDisableDeviceAuth\":true,\"allowInsecureAuth\":true},\"auth\":{\"mode\":\"token\",\"token\":\"pmad1Wurp\"}},\"agents\":{\"defaults\":{\"model\":\"google/gemini-2.5-flash\"}}}' > /root/.openclaw/openclaw.json && \
+CMD sh -c "echo '{\"gateway\":{\"port\":8080,\"mode\":\"local\",\"bind\":\"lan\",\"controlUi\":{\"dangerouslyDisableDeviceAuth\":true,\"allowInsecureAuth\":true},\"auth\":{\"mode\":\"token\",\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json && \
            unset PORT && exec openclaw gateway run"
