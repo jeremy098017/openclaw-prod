@@ -3,36 +3,53 @@
 # ================================
 FROM mcr.microsoft.com/playwright:v1.50.0-noble
 
-# 環境變數設定
 ENV NODE_ENV=production
 ENV TZ=Asia/Taipei
 
 WORKDIR /app
 
-# 安裝必要工具：tini、curl、socat
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    tini \
-    curl \
-    socat \
-    && rm -rf /var/lib/apt/lists/*
+# 安裝守護行程與網路測試工具
+RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm -rf /var/lib/apt/lists/*
 
-# 全域安裝 OpenClaw
+# 全域安裝 OpenClaw 與 http-proxy (隱形斗篷套件)
 RUN npm install -g openclaw
+RUN npm install http-proxy
 
-# 確保設定檔要存放的目錄存在
+# 建立隱形斗篷轉接器 (proxy.js)
+RUN cat <<'EOF' > proxy.js
+const http = require('http');
+const httpProxy = require('http-proxy');
+
+// 建立轉接器，將流量導向龍蝦的 18789
+const proxy = httpProxy.createProxyServer({ target: 'http://127.0.0.1:18789', ws: true });
+
+// 關鍵：在轉發前，拔掉所有透露真實 IP 的標籤
+proxy.on('proxyReq', (proxyReq) => {
+  proxyReq.removeHeader('x-forwarded-for');
+  proxyReq.removeHeader('x-forwarded-proto');
+  proxyReq.removeHeader('x-forwarded-host');
+});
+proxy.on('error', (err) => console.error('Proxy error:', err));
+
+// 啟動伺服器監聽 8080，幫 Zeabur 開門
+const server = http.createServer((req, res) => proxy.web(req, res));
+server.on('upgrade', (req, socket, head) => proxy.ws(req, socket, head));
+server.listen(8080, '0.0.0.0', () => console.log('Proxy listening on 8080'));
+EOF
+
+# 確保設定檔目錄存在
 RUN mkdir -p /root/.openclaw
 
-# 暴露 8080 Port 給 Zeabur
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 最終啟動指令：
-# 1. 寫入 JSON：mode 設回 local，並加入 trustedProxies 陣列來破解配對要求
-# 2. 啟動 socat 轉接 8080 -> 18789
+# 啟動指令：
+# 1. 寫入密碼 Token
+# 2. 啟動隱形斗篷 (node proxy.js)
 # 3. 啟動龍蝦
 # ================================
-CMD sh -c "echo '{\"gateway\":{\"mode\":\"local\",\"auth\":{\"token\":\"pmad1Wurp\"},\"trustedProxies\":[\"0.0.0.0/0\"]}}' > /root/.openclaw/openclaw.json && \
-           socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 & \
-           exec openclaw gateway run"
+CMD sh -c "echo '{\"gateway\":{\"mode\":\"local\",\"auth\":{\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json && \
+           node proxy.js & \
+           openclaw gateway run"
