@@ -35,5 +35,6 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # ================================
 CMD sh -c "openclaw config set gateway.mode local && \
            openclaw config set gateway.auth.token pmad1Wurp && \
+           openclaw config set gateway.trustedProxies '[\"0.0.0.0/0\"]' && \
            (socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 &) && \
            openclaw gateway run"
