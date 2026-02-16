@@ -22,18 +22,16 @@ RUN npm install -g openclaw
 # 建立使用者
 RUN useradd -m -u 10001 openclaw
 
-# ================================
-# 關鍵修正：使用 printf 確保 TOML 格式正確換行
-# ================================
+# 先複製檔案，避免蓋掉後面產生的設定檔
+COPY --chown=openclaw:openclaw . .
+
+# 產生符合 TOML 格式的設定檔，並確保權限正確
 RUN mkdir -p /home/openclaw/.openclaw && \
     printf "[gateway]\nmode = \"local\"\nport = 18789\n" > /home/openclaw/.openclaw/config.toml && \
-    chown -R openclaw:openclaw /home/openclaw /app
+    chown -R openclaw:openclaw /home/openclaw
 
 # 切換使用者
 USER openclaw
-
-# 複製其餘檔案
-COPY --chown=openclaw:openclaw . .
 
 # 健康檢查
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
@@ -43,5 +41,5 @@ EXPOSE 18789
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-# 啟動指令：直接加上參數強制過關
-CMD ["openclaw", "gateway", "run", "--gateway.mode=local", "--allow-unconfigured"]
+# 啟動指令：拿掉不支援的參數，回歸最簡潔的啟動方式
+CMD ["openclaw", "gateway", "run", "--allow-unconfigured"]
