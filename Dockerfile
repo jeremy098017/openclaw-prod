@@ -60,6 +60,6 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # ================================
 CMD sh -c "rm -f /root/.openclaw/openclaw.json && \
            openclaw config set gateway.mode local && \
-           openclaw config set gateway.auth.token pmad1Wurp && \
+           openclaw config set gateway.auth.password pmad1Wurp && \
            node proxy.js & \
            unset PORT && exec openclaw gateway run"
