@@ -17,20 +17,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN npm install -g openclaw
 RUN useradd -m -u 10001 openclaw
 
-# 預先建好資料夾並給予權限
 RUN mkdir -p /home/openclaw/.openclaw && chown -R openclaw:openclaw /home/openclaw /app
-
 COPY --chown=openclaw:openclaw . .
 
 USER openclaw
 
+# 修改健康檢查為 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -fs http://127.0.0.1:18789/ || exit 1
+  CMD curl -fs http://127.0.0.1:8080/ || exit 1
 
-EXPOSE 18789
+# 暴露 8080
+EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 終極絕殺：用 OpenClaw 內建指令寫入設定，接著馬上啟動！
+# 同時修正 Port 為 8080 與 Host 為 0.0.0.0
 # ================================
-CMD sh -c "openclaw config set gateway.mode local && exec openclaw gateway run"
+CMD sh -c "openclaw config set gateway.mode local && \
+           openclaw config set gateway.port 8080 && \
+           openclaw config set gateway.host 0.0.0.0 && \
+           exec openclaw gateway run"
