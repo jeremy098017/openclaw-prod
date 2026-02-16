@@ -8,43 +8,11 @@ ENV TZ=Asia/Taipei
 
 WORKDIR /app
 
-# 安裝守護行程與網路測試工具
+# 安裝守護行程與網路測試工具 (不需要隱形斗篷和 socat 了！)
 RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm -rf /var/lib/apt/lists/*
 
-# 全域安裝 OpenClaw 與隱形斗篷套件
+# 全域安裝 OpenClaw
 RUN npm install -g openclaw
-RUN npm install http-proxy
-
-# 建立完美版隱形斗篷轉接器 (proxy.js)
-RUN cat <<'EOF' > proxy.js
-const http = require('http');
-const httpProxy = require('http-proxy');
-
-const proxy = httpProxy.createProxyServer({ target: 'http://127.0.0.1:18789', ws: true });
-proxy.on('error', (err) => console.error('Proxy error:', err.message));
-
-// 終極偽裝函數
-const cleanHeaders = (req) => {
-  delete req.headers['x-forwarded-for'];
-  delete req.headers['x-forwarded-proto'];
-  delete req.headers['x-forwarded-host'];
-  delete req.headers['x-real-ip'];
-  req.headers['host'] = '127.0.0.1:18789';
-  req.headers['origin'] = 'http://127.0.0.1:18789';
-};
-
-const server = http.createServer((req, res) => {
-  cleanHeaders(req);
-  proxy.web(req, res);
-});
-
-server.on('upgrade', (req, socket, head) => {
-  cleanHeaders(req);
-  proxy.ws(req, socket, head);
-});
-
-server.listen(8080, '0.0.0.0', () => console.log('Proxy listening on 8080'));
-EOF
 
 # 確保設定檔目錄存在
 RUN mkdir -p /root/.openclaw
@@ -54,12 +22,11 @@ EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 啟動指令：
-# 1. 刪除舊設定檔，避免被之前的亂碼干擾
-# 2. 強制寫入我們專屬的 pmad1Wurp 密碼
+# 終極啟動指令：
+# 1. 直接把 8080 Port 寫給龍蝦
+# 2. 開放區域網路 (lan) 連線
+# 3. 關閉煩人的 Device Auth (設備綁定)
+# 4. 指定 Token 為 pmad1Wurp
 # ================================
-CMD sh -c "rm -f /root/.openclaw/openclaw.json && \
-           openclaw config set gateway.mode local && \
-           openclaw config set gateway.auth.password pmad1Wurp && \
-           node proxy.js & \
+CMD sh -c "echo '{\"gateway\":{\"port\":8080,\"mode\":\"local\",\"bind\":\"lan\",\"controlUi\":{\"dangerouslyDisableDeviceAuth\":true,\"allowInsecureAuth\":true},\"auth\":{\"mode\":\"token\",\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json && \
            unset PORT && exec openclaw gateway run"
