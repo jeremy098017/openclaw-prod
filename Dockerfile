@@ -15,8 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm
 RUN npm install -g openclaw
 RUN npm install http-proxy
 
-# 建立升級版隱形斗篷轉接器 (proxy.js)
-# 這次直接在最源頭刪除 Header，確保 HTTP 和 WebSocket 都無法洩漏 IP
+# 建立完美版隱形斗篷轉接器 (proxy.js)
 RUN cat <<'EOF' > proxy.js
 const http = require('http');
 const httpProxy = require('http-proxy');
@@ -24,21 +23,24 @@ const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer({ target: 'http://127.0.0.1:18789', ws: true });
 proxy.on('error', (err) => console.error('Proxy error:', err.message));
 
-// 清除 IP 標籤的函數
+// 終極偽裝函數
 const cleanHeaders = (req) => {
+  // 1. 拔掉所有外網 IP 標籤
   delete req.headers['x-forwarded-for'];
   delete req.headers['x-forwarded-proto'];
   delete req.headers['x-forwarded-host'];
   delete req.headers['x-real-ip'];
+  // 2. 【最關鍵的一步】把胸口的名牌 (Host) 也換成內網地址！
+  req.headers['host'] = '127.0.0.1:18789';
 };
 
-// 處理一般網頁載入 (HTTP)
+// 處理一般網頁載入
 const server = http.createServer((req, res) => {
   cleanHeaders(req);
   proxy.web(req, res);
 });
 
-// 處理即時連線 (WebSocket) - 這是之前漏掉的關鍵！
+// 處理即時連線 (WebSocket)
 server.on('upgrade', (req, socket, head) => {
   cleanHeaders(req);
   proxy.ws(req, socket, head);
@@ -55,8 +57,7 @@ EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ================================
-# 啟動指令：
-# unset PORT 防止 Zeabur 變數干擾
+# 啟動指令
 # ================================
 CMD sh -c "openclaw config set gateway.mode local && \
            openclaw config set gateway.auth.token pmad1Wurp && \
