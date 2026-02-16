@@ -1,0 +1,3 @@
+[gateway]
+mode = "local"
+port = 18789
