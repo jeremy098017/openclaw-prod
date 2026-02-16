@@ -23,5 +23,5 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # ================================
 # 終極啟動指令 (還原至最穩定狀態)
 # ================================
-CMD sh -c "echo '{\"gateway\":{\"port\":8080,\"mode\":\"local\",\"bind\":\"lan\",\"controlUi\":{\"dangerouslyDisableDeviceAuth\":true,\"allowInsecureAuth\":true},\"auth\":{\"mode\":\"token\",\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json && \
+CMD sh -c "if [ ! -f /root/.openclaw/openclaw.json ]; then echo '{\"gateway\":{\"port\":8080,\"mode\":\"local\",\"bind\":\"lan\",\"controlUi\":{\"dangerouslyDisableDeviceAuth\":true,\"allowInsecureAuth\":true},\"auth\":{\"mode\":\"token\",\"token\":\"pmad1Wurp\"}}}' > /root/.openclaw/openclaw.json; fi && \
            unset PORT && exec openclaw gateway run"
