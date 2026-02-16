@@ -36,5 +36,7 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # 3. 啟動龍蝦
 # ================================
 CMD sh -c "openclaw config set gateway.mode local && \
-    socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 & \
-    exec openclaw gateway run"
+           openclaw config set gateway.auth.token pmad1Wurp && \
+           openclaw config set gateway.trustedProxies true && \
+           socat TCP-LISTEN:8080,fork,reuseaddr TCP:127.0.0.1:18789 & \
+           exec openclaw gateway run"
