@@ -30,8 +30,12 @@ const cleanHeaders = (req) => {
   delete req.headers['x-forwarded-proto'];
   delete req.headers['x-forwarded-host'];
   delete req.headers['x-real-ip'];
-  // 2. 【最關鍵的一步】把胸口的名牌 (Host) 也換成內網地址！
+  
+  // 2. 把名牌 (Host) 換成內網地址
   req.headers['host'] = '127.0.0.1:18789';
+  
+  // 3. 【本次新增】把出發地 (Origin) 也換成內網地址！
+  req.headers['origin'] = 'http://127.0.0.1:18789';
 };
 
 // 處理一般網頁載入
