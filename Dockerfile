@@ -43,8 +43,8 @@ echo '{\
     \"port\": 8080,\
     \"mode\": \"local\",\
     \"bind\": \"lan\",\
-    \"controlUi\": { \"dangerouslyDisableDeviceAuth\": true, \"allowInsecureAuth\": true },\
-    \"auth\": { \"mode\": \"token\", \"token\": \"pmad1Wurp\" }\
+    \"auth\": { \"mode\": \"none\" },\
+    \"controlUi\": { \"dangerouslyDisableDeviceAuth\": true, \"allowInsecureAuth\": true }\
   }\
 }' > /root/.openclaw/openclaw.json; fi && \
 unset PORT && exec openclaw gateway run"
