@@ -23,7 +23,7 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # ================================
 # 終極啟動指令 (包含 Gemini 與 LINE 設定)
 # ================================
-CMD sh -c "if [ ! -f /root/.openclaw/openclaw.json ]; then \
+CMD sh -c "rm -f /root/.openclaw/openclaw.json && \
 echo '{\
   \"agents\": {\
     \"defaults\": {\
@@ -46,5 +46,5 @@ echo '{\
     \"auth\": { \"mode\": \"none\" },\
     \"controlUi\": { \"dangerouslyDisableDeviceAuth\": true, \"allowInsecureAuth\": true }\
   }\
-}' > /root/.openclaw/openclaw.json; fi && \
+}' > /root/.openclaw/openclaw.json && \
 unset PORT && exec openclaw gateway run"
