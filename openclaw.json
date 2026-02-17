@@ -30,8 +30,7 @@
   },
   "plugins": {
     "entries": {
-      "line": { "enabled": true },
-      "browser": { "enabled": true } 
+      "line": { "enabled": true }
     }
   }
 }
