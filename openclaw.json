@@ -28,6 +28,13 @@
       "token": "pmad1Wurp"
     }
   },
+  "skills": {
+    "entries": {
+      "browser": {
+        "enabled": true
+      }
+    }
+  },
   "plugins": {
     "entries": {
       "line": { "enabled": true }
