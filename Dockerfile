@@ -13,38 +13,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm
 # 全域安裝 OpenClaw
 RUN npm install -g openclaw
 
-# 確保設定檔目錄存在
+# 建立設定檔目錄並將檔案複製進去
 RUN mkdir -p /root/.openclaw
+COPY openclaw.json /root/.openclaw/openclaw.json
 
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-# ================================
-# 終極啟動指令 (包含 Gemini 與 LINE 設定)
-# ================================
-CMD sh -c "rm -f /root/.openclaw/openclaw.json && \
-echo '{\
-  \"agents\": {\
-    \"defaults\": {\
-      \"model\": { \"primary\": \"gemini\" },\
-      \"models\": { \"google/gemini-2.5-flash\": { \"alias\": \"gemini\" } }\
-    }\
-  },\
-  \"channels\": {\
-    \"line\": {\
-      \"enabled\": true,\
-      \"channelSecret\": \"2f1a6ae1cc34a355f39027bedf8d7c4f\",\
-      \"channelAccessToken\": \"iKDO1rKvL4VpiwIj8+yrQLnQ3stCF09lLznX39kGcbhl+OhNA2TRw8FIgIitfswi3qjpmvKnum5QCRwyGiDUCF88SaYwjmRLPEGfZDg5ztOynjfrHllE9/ODsj2P+D/dmItcPzPmGRgj5kZHtO/qRgdB04t89/1O/w1cDnyilFU=\",\
-      \"debug\": true\
-    }\
-  },\
-  \"gateway\": {\
-    \"port\": 8080,\
-    \"mode\": \"local\",\
-    \"bind\": \"lan\",\
-    \"auth\": { \"mode\": \"none\" },\
-    \"controlUi\": { \"dangerouslyDisableDeviceAuth\": true, \"allowInsecureAuth\": true }\
-  }\
-}' > /root/.openclaw/openclaw.json && \
-unset PORT && exec openclaw gateway run"
+# 啟動指令變得非常乾淨，不會再出錯了
+CMD ["sh", "-c", "unset PORT && exec openclaw gateway run"]

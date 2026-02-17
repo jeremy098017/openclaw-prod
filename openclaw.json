@@ -1,0 +1,26 @@
+{
+  "agents": {
+    "defaults": {
+      "model": { "primary": "gemini" },
+      "models": { "google/gemini-2.5-flash": { "alias": "gemini" } }
+    }
+  },
+  "channels": {
+    "line": {
+      "enabled": true,
+      "channelSecret": "2f1a6ae1cc34a355f39027bedf8d7c4f",
+      "channelAccessToken": "iKDO1rKvL4VpiwIj8+yrQLnQ3stCF09lLznX39kGcbhl+OhNA2TRw8FIgIitfswi3qjpmvKnum5QCRwyGiDUCF88SaYwjmRLPEGfZDg5ztOynjfrHllE9/ODsj2P+D/dmItcPzPmGRgj5kZHtO/qRgdB04t89/1O/w1cDnyilFU=",
+      "debug": true
+    }
+  },
+  "gateway": {
+    "port": 8080,
+    "mode": "local",
+    "bind": "lan",
+    "auth": { "mode": "none" },
+    "controlUi": {
+      "dangerouslyDisableDeviceAuth": true,
+      "allowInsecureAuth": true
+    }
+  }
+}
