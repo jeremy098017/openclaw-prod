@@ -1,18 +1,29 @@
 {
+  "meta": {
+    "lastTouchedVersion": "2026.2.15",
+    "lastTouchedAt": "2026-02-17T11:50:00.000Z"
+  },
   "agents": {
     "defaults": {
-      "model": { "primary": "gemini" },
-      "models": { "google/gemini-2.5-flash": { "alias": "gemini" } }
+      "model": {
+        "primary": "gemini"
+      },
+      "models": {
+        "google/gemini-2.5-flash": {
+          "alias": "gemini"
+        }
+      },
+      "maxConcurrent": 4
     }
   },
   "channels": {
     "line": {
       "enabled": true,
-      "channelSecret": "2f1a6ae1cc34a355f39027bedf8d7c4f",
-      "channelAccessToken": "iKDO1rKvL4VpiwIj8+yrQLnQ3stCF09lLznX39kGcbhl+OhNA2TRw8FIgIitfswi3qjpmvKnum5QCRwyGiDUCF88SaYwjmRLPEGfZDg5ztOynjfrHllE9/ODsj2P+D/dmItcPzPmGRgj5kZHtO/qRgdB04t89/1O/w1cDnyilFU=",
+      "channelSecret": "請填入您的_LINE_CHANNEL_SECRET",
+      "channelAccessToken": "請填入您的_LINE_CHANNEL_ACCESS_TOKEN",
       "debug": true,
       "dmPolicy": "pairing",
-      "allowFrom": ["U42eab85cabcffa4deea7b79cea1127e0"] 
+      "allowFrom": ["U42eab85cabcffa4deea7b79cea1127e0"]
     }
   },
   "gateway": {
@@ -28,16 +39,21 @@
       "token": "pmad1Wurp"
     }
   },
-  "skills": {
+  "plugins": {
     "entries": {
-      "browser": {
+      "line": {
         "enabled": true
       }
     }
   },
-  "plugins": {
+  "skills": {
     "entries": {
-      "line": { "enabled": true }
+      "agent-browser": {
+        "enabled": true
+      }
     }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
   }
 }
