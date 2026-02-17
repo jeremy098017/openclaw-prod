@@ -17,6 +17,10 @@
     "port": 8080,
     "mode": "local",
     "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "pmad1Wurp"
+    },
     "controlUi": {
       "dangerouslyDisableDeviceAuth": true,
       "allowInsecureAuth": true
