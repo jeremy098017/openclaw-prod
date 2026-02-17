@@ -10,15 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm
 # 全域安裝 OpenClaw
 RUN npm install -g openclaw
 
-# 建立設定檔目錄
-RUN mkdir -p /root/.openclaw
-
-# 直接將剛才建立的 json 複製進去 (這是最穩定的做法)
-COPY openclaw.json /root/.openclaw/openclaw.json
+# 將正確的設定檔先 COPY 到暫存目錄 /app
+COPY openclaw.json /app/openclaw.json
 
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-# 啟動指令現在變得很乾淨，不會再出錯了
-CMD ["sh", "-c", "unset PORT && exec openclaw gateway run"]
+# 關鍵：啟動時先執行 cp，確保 /root/.openclaw 下的檔案永遠是最新的
+CMD ["sh", "-c", "mkdir -p /root/.openclaw && cp /app/openclaw.json /root/.openclaw/openclaw.json && unset PORT && exec openclaw gateway run"]
