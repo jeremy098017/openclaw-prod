@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.15",
-    "lastTouchedAt": "2026-02-18T02:27:00.000Z"
+    "lastTouchedAt": "2026-02-18T13:30:00.000Z"
   },
   "agents": {
     "defaults": {
@@ -48,7 +48,14 @@
   "skills": {
     "entries": {
       "agent-browser": {
-        "enabled": true
+        "enabled": true,
+        "params": {
+          "provider": "playwright",
+          "headless": true,
+          "launchOptions": {
+            "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+          }
+        }
       }
     }
   },
