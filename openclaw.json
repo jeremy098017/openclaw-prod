@@ -3,7 +3,6 @@
     "lastTouchedVersion": "2026.2.15",
     "lastTouchedAt": "2026-02-18T13:30:00.000Z"
   },
-  "admins": ["U42eab85cabcffa4deea7b79cea1127e0"],
   "agents": {
     "defaults": {
       "model": {
@@ -50,8 +49,7 @@
   "skills": {
     "entries": {
       "agent-browser": {
-        "enabled": true,
-        "provider": "playwright"
+        "enabled": true
       },
       "healthcheck": {
         "enabled": true
