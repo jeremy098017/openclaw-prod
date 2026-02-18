@@ -22,7 +22,7 @@
       "channelSecret": "2f1a6ae1cc34a355f39027bedf8d7c4f",
       "channelAccessToken": "iKDO1rKvL4VpiwIj8+yrQLnQ3stCF09lLznX39kGcbhl+OhNA2TRw8FIgIitfswi3qjpmvKnum5QCRwyGiDUCF88SaYwjmRLPEGfZDg5ztOynjfrHllE9/ODsj2P+D/dmItcPzPmGRgj5kZHtO/qRgdB04t89/1O/w1cDnyilFU=",
       "debug": true,
-      "dmPolicy": "pairing",
+      "dmPolicy": "allow",
       "allowFrom": ["U42eab85cabcffa4deea7b79cea1127e0"]
     }
   },
@@ -42,7 +42,7 @@
   },
   "plugins": {
     "entries": {
-      "line": {
+      "weather": {
         "enabled": true
       }
     }
@@ -52,9 +52,6 @@
       "agent-browser": {
         "enabled": true,
         "provider": "playwright"
-      },
-      "weather": {
-        "enabled": true
       },
       "healthcheck": {
         "enabled": true
