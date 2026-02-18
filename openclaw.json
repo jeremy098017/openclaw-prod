@@ -48,7 +48,8 @@
   "skills": {
     "entries": {
       "agent-browser": {
-        "enabled": true
+        "enabled": true,
+	"provider": "playwright"
       }
     }
   },
