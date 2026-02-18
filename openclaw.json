@@ -1,17 +1,16 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.15",
-    "lastTouchedAt": "2026-02-17T11:50:00.000Z"
+    "lastTouchedAt": "2026-02-18T02:27:00.000Z"
   },
   "agents": {
     "defaults": {
       "model": {
-        "primary": "gemini"
+        "primary": "google/gemini-2.5-flash-lite"
       },
       "models": {
-        "google/gemini-2.5-flash": {
-          "alias": "gemini"
-        }
+        "google/gemini-2.5-flash": { "alias": "flash" },
+        "google/gemini-2.5-flash-lite": { "alias": "lite" }
       },
       "maxConcurrent": 4
     }
@@ -36,7 +35,7 @@
     },
     "auth": {
       "mode": "token",
-      "token": "pmad1Wurp"
+      "token": "<請更換為您的 Gateway Token>"
     }
   },
   "plugins": {
