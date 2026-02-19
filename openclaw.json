@@ -19,7 +19,10 @@
     "port": 8080,
     "mode": "local",
     "bind": "lan",
-    "auth": { "mode": "none" },
+    "auth": {
+      "mode": "token",
+      "token": "pmad1Wurp"
+    },
     "controlUi": {
       "allowInsecureAuth": true,
       "dangerouslyDisableDeviceAuth": true
@@ -36,9 +39,7 @@
   "skills": {
     "entries": {
       "agent-browser": {
-        "enabled": true,
-        "controlUrl": "ws://127.0.0.1:8080",
-        "gatewayToken": ""
+        "enabled": true
       }
     }
   }
